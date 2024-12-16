@@ -36,22 +36,13 @@
              {
                  if (UsesErrorOr(typeof(TResponse)))
                  {
-                     // Works: You can create an ErrorOr<T> from any Error given you specify T 
-                     //return (TResponse)(object)CommonError.Validator.ToErrorOr<SomeResult>();
-                     
-                     
-                     // Fails: Calling ToErrorOr<T> on an Error with dynamic reflected T
+
                      var t = GetInnerGenericType(typeof(TResponse));
                      Console.WriteLine(t.Name); // -> SomeResult
-
-                     Console.WriteLine("1");
+                     
                      var method = typeof(ErrorOrExtensions).GetMethods( BindingFlags.Public | BindingFlags.Static).Single( m => m.Name == nameof(ErrorOrExtensions.ToErrorOr) && m.GetParameters().Single().ParameterType == typeof(Error));
-                     Console.WriteLine("2");
                      var genMethod = method.MakeGenericMethod(t);
-                     Console.WriteLine("3");
-                     // Error:  System.ArgumentException: Object of type 'ErrorOr.Error' cannot be converted to type 'dnet_fluent_erroror.SomeResult'.
                      var invokeRes = genMethod.Invoke(null, new object[] { CommonError.Validator });
-                     Console.WriteLine("4");
                      return (TResponse)invokeRes;
                      
                  }
