@@ -45,7 +45,7 @@
                      Console.WriteLine(t.Name); // -> SomeResult
 
                      Console.WriteLine("1");
-                     var method = typeof(ErrorOrExtensions).GetMethods( BindingFlags.Public | BindingFlags.Static).FirstOrDefault( m => m.Name == "ToErrorOr" && m.IsGenericMethod);
+                     var method = typeof(ErrorOrExtensions).GetMethods( BindingFlags.Public | BindingFlags.Static).Single( m => m.Name == nameof(ErrorOrExtensions.ToErrorOr) && m.GetParameters().Single().ParameterType == typeof(Error));
                      Console.WriteLine("2");
                      var genMethod = method.MakeGenericMethod(t);
                      Console.WriteLine("3");
