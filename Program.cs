@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -28,7 +29,7 @@ namespace dnet_fluent_erroror
 
             if (mediatorResult.IsError)
             {
-                Console.WriteLine($"Error of the MediatR command: {mediatorResult.FirstError.Code}");
+                Console.WriteLine($"Error #({mediatorResult.Errors.Count}|{mediatorResult.Errors.Count}) of the MediatR command: {mediatorResult.Errors.Last().Code}-{mediatorResult.Errors.Last().Description}");
             }
             else
             {

@@ -36,13 +36,18 @@
              {
                  if (UsesErrorOr(typeof(TResponse)))
                  {
-
-                     var t = GetInnerGenericType(typeof(TResponse));
-                     Console.WriteLine(t.Name); // -> SomeResult
+                     var t = typeof(TResponse).GetGenericArguments()[0];
                      
-                     var method = typeof(ErrorOrExtensions).GetMethods( BindingFlags.Public | BindingFlags.Static).Single( m => m.Name == nameof(ErrorOrExtensions.ToErrorOr) && m.GetParameters().Single().ParameterType == typeof(Error));
+                     var method = typeof(ErrorOrExtensions).GetMethods( BindingFlags.Public | BindingFlags.Static).Single( m => m.Name == nameof(ErrorOrExtensions.ToErrorOr) && m.GetParameters().Single().ParameterType == typeof(List<Error>));
                      var genMethod = method.MakeGenericMethod(t);
-                     var invokeRes = genMethod.Invoke(null, new object[] { CommonError.Validator });
+                     
+                     List<Error> errList = new List<Error>() { CommonError.Validator };
+                     foreach (var failure in validationFailures)
+                     {
+                         errList.Add(Error.Validation(code: $"Validation.{t.Name}.{failure.PropertyName}.{failure.ErrorCode}", description: failure.ErrorMessage));
+                     }
+                     
+                     var invokeRes = genMethod.Invoke(null, new object[] { errList });
                      return (TResponse)invokeRes;
                      
                  }
@@ -60,14 +65,6 @@
         {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ErrorOr<>);
         }
-
-        static Type GetInnerGenericType(Type type)
-        {
-            
-            // Get the generic argument of IRequest<T>
-            var outerGenericArgument = type.GetGenericArguments()[0];
-            return outerGenericArgument;
-            
-        }
+        
     }
 }

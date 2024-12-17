@@ -6,5 +6,7 @@ namespace dnet_fluent_erroror
     public class MyCommand : IRequest<ErrorOr<SomeResult>>
     {
         public int SomeNumber { get; set; }
+
+        public string Message { get; set; }
     }
 }
